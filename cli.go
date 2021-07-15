@@ -13,7 +13,7 @@ Usage:
 	proc meminfo [--json] [--machine]
 
 Description:
-  Procolli exposes /proc information in a machine-readable manner
+  Procolli exposes some files in /proc as tidied machine-readable JSON
 
 Options:
   --json      display the result as JSON
