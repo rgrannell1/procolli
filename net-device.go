@@ -4,42 +4,47 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
 type NetDeviceReceiveRecord struct {
-	device       string
-	receiveBytes int64
-	packets      int64
-	errs         int64
-	drop         int64
-	fifo         int64
-	frame        int64
-	compressed   int64
-	multicast    int64
+	Device       string `json:"device"`
+	ReceiveBytes int64  `json:"receiveBytes"`
+	Packets      int64  `json:"packets"`
+	Errs         int64  `json:"errs"`
+	Drop         int64  `json:"drop"`
+	Fifo         int64  `json:"fifo"`
+	Frame        int64  `json:"frame"`
+	Compressed   int64  `json:"compressed"`
+	Multicast    int64  `json:"multicast"`
 }
 
 type NetDeviceTransmitRecord struct {
-	device        string
-	transmitBytes int64
-	packets       int64
-	errs          int64
-	drop          int64
-	fifo          int64
-	frame         int64
-	compressed    int64
-	multicast     int64
+	Device        string `json:"device"`
+	TransmitBytes int64  `json:"transmitBytes"`
+	Packets       int64  `json:"packets"`
+	Errs          int64  `json:"errs"`
+	Drop          int64  `json:"drop"`
+	Fifo          int64  `json:"fifo"`
+	Frame         int64  `json:"frame"`
+	Compressed    int64  `json:"compressed"`
+	Multicast     int64  `json:"multicast"`
 }
 
 type NetDeviceRecord struct {
-	receive  NetDeviceReceiveRecord
-	transmit NetDeviceTransmitRecord
+	Receive  NetDeviceReceiveRecord  `json:"recieve"`
+	Transmit NetDeviceTransmitRecord `json:"transmit"`
 }
 
 func parseInt(val string) (int64, error) {
 	return strconv.ParseInt(val, 10, 64)
+}
+
+func asDeviceName(val string) string {
+	return strings.ReplaceAll(val, ":", "")
 }
 
 func retrieveRecord(parts []string) (NetDeviceReceiveRecord, error) {
@@ -76,17 +81,17 @@ func retrieveRecord(parts []string) (NetDeviceReceiveRecord, error) {
 		return NetDeviceReceiveRecord{}, err
 	}
 
-	iface := parts[0]
+	iface := asDeviceName(parts[0])
 	return NetDeviceReceiveRecord{
-		device:       iface,
-		receiveBytes: receiveBytes,
-		packets:      packets,
-		errs:         errs,
-		drop:         drop,
-		fifo:         fifo,
-		frame:        frame,
-		compressed:   compressed,
-		multicast:    multicast,
+		Device:       iface,
+		ReceiveBytes: receiveBytes,
+		Packets:      packets,
+		Errs:         errs,
+		Drop:         drop,
+		Fifo:         fifo,
+		Frame:        frame,
+		Compressed:   compressed,
+		Multicast:    multicast,
 	}, nil
 }
 
@@ -127,22 +132,22 @@ func transmitRecord(parts []string) (NetDeviceTransmitRecord, error) {
 	iface := parts[0]
 
 	return NetDeviceTransmitRecord{
-		device:        iface,
-		transmitBytes: transmitBytes,
-		packets:       packets,
-		errs:          errs,
-		drop:          drop,
-		fifo:          fifo,
-		frame:         frame,
-		compressed:    compressed,
-		multicast:     multicast,
+		Device:        iface,
+		TransmitBytes: transmitBytes,
+		Packets:       packets,
+		Errs:          errs,
+		Drop:          drop,
+		Fifo:          fifo,
+		Frame:         frame,
+		Compressed:    compressed,
+		Multicast:     multicast,
 	}, nil
 }
 
-func NetDevice(asJson bool, agg bool) ([]NetDeviceRecord, error) {
+func NetDevice(asJson bool, agg bool) error {
 	data, err := ioutil.ReadFile("/proc/net/dev")
 	if err != nil {
-		return nil, err
+		return err
 	}
 	lines := strings.Split(string(data), "\n")
 	metric_lines := lines[2:]
@@ -161,25 +166,35 @@ func NetDevice(asJson bool, agg bool) ([]NetDeviceRecord, error) {
 		ndrr, err := retrieveRecord(parts)
 
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		ndtr, err := transmitRecord(parts)
 
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		record := NetDeviceRecord{
-			receive:  ndrr,
-			transmit: ndtr,
+			Receive:  ndrr,
+			Transmit: ndtr,
 		}
 
 		records[idx] = record
 	}
 
-	out, _ := json.Marshal(records)
-	fmt.Println(out)
+	NetDeviceReport(records)
 
-	return records, nil
+	return nil
+}
+
+func NetDeviceReport(records []NetDeviceRecord) {
+	json_data2, err := json.Marshal(records)
+
+	if err != nil {
+
+		log.Fatal(err)
+	}
+
+	fmt.Println(string(json_data2))
 }

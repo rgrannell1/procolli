@@ -36,7 +36,7 @@ Options:
 	}
 
 	if net {
-		_, err := NetDevice(asJson, agg)
+		err := NetDevice(asJson, agg)
 
 		if err != nil {
 			log.Fatal(err)
