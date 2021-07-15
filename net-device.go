@@ -11,30 +11,29 @@ import (
 )
 
 type NetDeviceReceiveRecord struct {
-	Device       string `json:"device"`
-	ReceiveBytes int64  `json:"receiveBytes"`
-	Packets      int64  `json:"packets"`
-	Errs         int64  `json:"errs"`
-	Drop         int64  `json:"drop"`
-	Fifo         int64  `json:"fifo"`
-	Frame        int64  `json:"frame"`
-	Compressed   int64  `json:"compressed"`
-	Multicast    int64  `json:"multicast"`
+	ReceiveBytes int64 `json:"receiveBytes"`
+	Packets      int64 `json:"packets"`
+	Errs         int64 `json:"errs"`
+	Drop         int64 `json:"drop"`
+	Fifo         int64 `json:"fifo"`
+	Frame        int64 `json:"frame"`
+	Compressed   int64 `json:"compressed"`
+	Multicast    int64 `json:"multicast"`
 }
 
 type NetDeviceTransmitRecord struct {
-	Device        string `json:"device"`
-	TransmitBytes int64  `json:"transmitBytes"`
-	Packets       int64  `json:"packets"`
-	Errs          int64  `json:"errs"`
-	Drop          int64  `json:"drop"`
-	Fifo          int64  `json:"fifo"`
-	Frame         int64  `json:"frame"`
-	Compressed    int64  `json:"compressed"`
-	Multicast     int64  `json:"multicast"`
+	TransmitBytes int64 `json:"transmitBytes"`
+	Packets       int64 `json:"packets"`
+	Errs          int64 `json:"errs"`
+	Drop          int64 `json:"drop"`
+	Fifo          int64 `json:"fifo"`
+	Frame         int64 `json:"frame"`
+	Compressed    int64 `json:"compressed"`
+	Multicast     int64 `json:"multicast"`
 }
 
 type NetDeviceRecord struct {
+	Device   string                  `json:"device"`
 	Receive  NetDeviceReceiveRecord  `json:"recieve"`
 	Transmit NetDeviceTransmitRecord `json:"transmit"`
 }
@@ -44,7 +43,9 @@ func parseInt(val string) (int64, error) {
 }
 
 func asDeviceName(val string) string {
-	return strings.ReplaceAll(val, ":", "")
+	stripped := strings.ReplaceAll(val, ":", "")
+
+	return stripped
 }
 
 func retrieveRecord(parts []string) (NetDeviceReceiveRecord, error) {
@@ -81,9 +82,7 @@ func retrieveRecord(parts []string) (NetDeviceReceiveRecord, error) {
 		return NetDeviceReceiveRecord{}, err
 	}
 
-	iface := asDeviceName(parts[0])
 	return NetDeviceReceiveRecord{
-		Device:       iface,
 		ReceiveBytes: receiveBytes,
 		Packets:      packets,
 		Errs:         errs,
@@ -129,10 +128,7 @@ func transmitRecord(parts []string) (NetDeviceTransmitRecord, error) {
 		return NetDeviceTransmitRecord{}, err
 	}
 
-	iface := parts[0]
-
 	return NetDeviceTransmitRecord{
-		Device:        iface,
 		TransmitBytes: transmitBytes,
 		Packets:       packets,
 		Errs:          errs,
@@ -151,11 +147,11 @@ func NetDevice(asJson bool, agg bool) error {
 	}
 	lines := strings.Split(string(data), "\n")
 	metric_lines := lines[2:]
-
 	whitespace := regexp.MustCompile(`\s+`)
 
-	var records = make([]NetDeviceRecord, len(metric_lines))
-	for idx, line := range metric_lines {
+	var records = make([]NetDeviceRecord, 0)
+
+	for _, line := range metric_lines {
 		trimmed := strings.Trim(line, " ")
 		parts := whitespace.Split(trimmed, -1)
 
@@ -175,26 +171,27 @@ func NetDevice(asJson bool, agg bool) error {
 			return err
 		}
 
+		iface := asDeviceName(parts[0])
 		record := NetDeviceRecord{
+			Device:   iface,
 			Receive:  ndrr,
 			Transmit: ndtr,
 		}
 
-		records[idx] = record
+		records = append(records, record)
 	}
 
-	NetDeviceReport(records)
+	NetDeviceReport(asJson, records)
 
 	return nil
 }
 
-func NetDeviceReport(records []NetDeviceRecord) {
-	json_data2, err := json.Marshal(records)
+func NetDeviceReport(asJson bool, records []NetDeviceRecord) {
+	jsonStr, err := json.Marshal(records)
 
 	if err != nil {
-
 		log.Fatal(err)
 	}
 
-	fmt.Println(string(json_data2))
+	fmt.Println(string(jsonStr))
 }
