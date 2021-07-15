@@ -1,5 +1,5 @@
 
-# Procolli
+# Procolli 🥦
 
 Procolli provides a command-interface to parts of `/proc`; everything _can_ be a file but it's doesn't mean it should be.
 

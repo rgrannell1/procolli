@@ -13,7 +13,11 @@ Usage:
 	proc meminfo [--json] [--machine]
 
 Description:
+<<<<<<< HEAD
   Procolli exposes /proc information in a machine-readable manner.
+=======
+  Procolli exposes some files in /proc as tidied machine-readable JSON
+>>>>>>> 4d5fbfcc120435eb334997a270b24fda0aedf355
 
 Options:
   --json      display the result as JSON
