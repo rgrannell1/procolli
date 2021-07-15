@@ -7,13 +7,14 @@ import (
 	"log"
 )
 
-func MemInfo(asJson bool, agg bool) error {
+func MemInfo(asJson bool) error {
 	data, err := ioutil.ReadFile("/proc/meminfo")
 	if err != nil {
 		return err
 	}
 
 	fmt.Println(string(data))
+	return nil
 }
 
 func MemInfoReport(asJson bool, records []interface{}) {

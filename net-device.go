@@ -140,7 +140,7 @@ func transmitRecord(parts []string) (NetDeviceTransmitRecord, error) {
 	}, nil
 }
 
-func NetDevice(asJson bool, agg bool) error {
+func NetDevice(asJson bool) error {
 	data, err := ioutil.ReadFile("/proc/net/dev")
 	if err != nil {
 		return err
