@@ -6,7 +6,8 @@ Procolli provides a command-interface to parts of `/proc`; everything _can_ be a
 ## Usage
 
 ```bash
-proc net [--json] [--agg]
+proc netdev
+proc meminfo
 ```
 
 ## Build

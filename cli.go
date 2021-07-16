@@ -9,20 +9,12 @@ import (
 func main() {
 	usage := `Procolli
 Usage:
-  proc netdev [--json] [--machine]
-	proc meminfo [--json] [--machine]
+  proc netdev
+	proc meminfo
 
 Description:
-<<<<<<< HEAD
-  Procolli exposes /proc information in a machine-readable manner.
-=======
   Procolli exposes some files in /proc as tidied machine-readable JSON
->>>>>>> 4d5fbfcc120435eb334997a270b24fda0aedf355
-
-Options:
-  --json      display the result as JSON
-	--machine   print sizes in human-unfriendly formats
-	`
+`
 	opts, _ := docopt.ParseDoc(usage)
 	net, err := opts.Bool("netdev")
 
@@ -30,14 +22,8 @@ Options:
 		log.Fatal(err)
 	}
 
-	asJson, err := opts.Bool("--json")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	if net {
-		err := NetDevice(asJson)
+		err := NetDevice()
 
 		if err != nil {
 			log.Fatal(err)
@@ -51,7 +37,7 @@ Options:
 	}
 
 	if meminfo {
-		err := MemInfo(asJson)
+		err := MemInfo()
 
 		if err != nil {
 			log.Fatal(err)
