@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/docopt/docopt-go"
@@ -23,11 +26,6 @@ Description:
 
 `
 
-type ProcDirectory struct {
-	Base string
-	Show func(fpath string, fs procfs.FS) (string, error)
-}
-
 func main() {
 	arguments, _ := docopt.ParseDoc(PROCOLLI_CLI)
 	fpath, _ := arguments.String("<fpath>")
@@ -37,102 +35,7 @@ func main() {
 		panic(err)
 	}
 
-	supportedMetrics := []ProcDirectory{
-		{
-			Base: "/proc/pressure",
-			Show: Pressure,
-		},
-		{
-			Base: "/proc/net/dev",
-			Show: NetDev,
-		},
-		{
-			Base: "/proc/buddyinfo",
-			Show: BuddyInfo,
-		},
-		{
-			Base: "/proc/cpuinfo",
-			Show: CPUInfo,
-		},
-		{
-			Base: "/proc/cmdline",
-			Show: CmdLine,
-		},
-		{
-			Base: "/proc/loadavg",
-			Show: LoadAvg,
-		},
-		{
-			Base: "/proc/mdstat",
-			Show: MdStat,
-		},
-		{
-			Base: "/proc/meminfo",
-			Show: MemInfo,
-		},
-		{
-			Base: "/proc/net/protocols",
-			Show: NetProcotols,
-		},
-		{
-			Base: "/proc/net/sockstat",
-			Show: NetSockstat,
-		},
-		{
-			Base: "/proc/net/sockstat6",
-			Show: NetSockstat6,
-		},
-		{
-			Base: "/proc/net/stat",
-			Show: NetStat,
-		},
-		{
-			Base: "/proc/net/tcp",
-			Show: NetTcp,
-		},
-		{
-			Base: "/proc/net/tcp6",
-			Show: NetTcp6,
-		},
-		{
-			Base: "/proc/net/udp",
-			Show: NetUdp,
-		},
-		{
-			Base: "/proc/net/udp6",
-			Show: NetUdp6,
-		},
-		{
-			Base: "/proc/net/unix",
-			Show: NetUnix,
-		},
-		{
-			Base: "/proc/schedstat",
-			Show: Schedstat,
-		},
-		{
-			Base: "/proc/slabinfo",
-			Show: Slabinfo,
-		},
-		{
-			Base: "/proc/stat",
-			Show: Stat,
-		},
-		{
-			Base: "/proc/swaps",
-			Show: Swaps,
-		},
-		{
-			Base: "/proc/vmstat",
-			Show: VmStat,
-		},
-		{
-			Base: "/proc/zoneinfo",
-			Show: ZoneInfo,
-		},
-	}
-
-	for _, pdir := range supportedMetrics {
+	for _, pdir := range SupportedFiles() {
 		if strings.HasPrefix(fpath, pdir.Base) {
 			json, err := pdir.Show(fpath, proc)
 			if err != nil {
@@ -140,7 +43,35 @@ func main() {
 			}
 
 			fmt.Println(json)
-			break
+			os.Exit(0)
 		}
 	}
+
+	pidPattern := regexp.MustCompile("/proc/([0-9]+)")
+	pidMatch := pidPattern.FindStringSubmatch(fpath)
+
+	if len(pidMatch) == 2 {
+		pid, err := strconv.Atoi(pidMatch[1])
+		if err != nil {
+			panic(err)
+		}
+
+		pidFs, err := proc.Proc(pid)
+		if err != nil {
+			panic(err)
+		}
+
+		for _, pdir := range PidFiles(pid) {
+			if strings.HasPrefix(fpath, pdir.Base) {
+				json, err := pdir.Show(fpath, pidFs)
+				if err != nil {
+					panic(err)
+				}
+
+				fmt.Println(json)
+				os.Exit(0)
+			}
+		}
+	}
+
 }
