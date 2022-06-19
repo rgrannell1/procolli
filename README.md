@@ -3,6 +3,12 @@
 
 Procolli displays files in the proc filesystem as machine-readable JSON.
 
+## Usage
+
+```bash
+procolli '/proc/pressure/cpu'
+```
+
 ## Supported Files
 
 ```
@@ -30,6 +36,19 @@ Procolli displays files in the proc filesystem as machine-readable JSON.
 /proc/swaps
 /proc/vmstat
 /proc/zoneinfo
+```
+
+```
+/proc/<pid>/cgroup
+/proc/<pid>/cmdline
+/proc/<pid>/comm
+/proc/<pid>/cwd
+/proc/<pid>/environ
+/proc/<pid>/limits
+/proc/<pid>/maps
+/proc/<pid>/net/dev
+/proc/<pid>/schedstat
+/proc/<pid>/stat
 ```
 
 ## License
