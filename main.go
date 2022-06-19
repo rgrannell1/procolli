@@ -86,9 +86,51 @@ func main() {
 			Base: "/proc/net/stat",
 			Show: NetStat,
 		},
+		{
+			Base: "/proc/net/tcp",
+			Show: NetTcp,
+		},
+		{
+			Base: "/proc/net/tcp6",
+			Show: NetTcp6,
+		},
+		{
+			Base: "/proc/net/udp",
+			Show: NetUdp,
+		},
+		{
+			Base: "/proc/net/udp6",
+			Show: NetUdp6,
+		},
+		{
+			Base: "/proc/net/unix",
+			Show: NetUnix,
+		},
+		{
+			Base: "/proc/schedstat",
+			Show: Schedstat,
+		},
+		{
+			Base: "/proc/slabinfo",
+			Show: Slabinfo,
+		},
+		{
+			Base: "/proc/stat",
+			Show: Stat,
+		},
+		{
+			Base: "/proc/swaps",
+			Show: Swaps,
+		},
+		{
+			Base: "/proc/vmstat",
+			Show: VmStat,
+		},
+		{
+			Base: "/proc/zoneinfo",
+			Show: ZoneInfo,
+		},
 	}
-
-	proc.NetStat()
 
 	for _, pdir := range supportedMetrics {
 		if strings.HasPrefix(fpath, pdir.Base) {
