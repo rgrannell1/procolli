@@ -1,7 +1,7 @@
 
 # Procolli
 
-Procolli displays files in the proc filesystem as machine-readable JSON.
+Procolli displays files in the proc filesystem as machine-readable JSON. It's a thin wrapper around [procfs](https://github.com/prometheus/procfs).
 
 ## Usage
 
