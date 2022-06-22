@@ -6,7 +6,15 @@ Procolli displays files in the proc filesystem as machine-readable JSON.
 ## Usage
 
 ```bash
-procolli '/proc/pressure/cpu'
+❯ procolli /proc/pressure/cpu --watch 1000
+```
+
+```json
+{"Some":{"Avg10":2.85,"Avg60":2.83,"Avg300":1.83,"Total":162275990},"Full":{"Avg10":0.56,"Avg60":0.74,"Avg300":0.86,"Total":107276495}}
+{"Some":{"Avg10":2.85,"Avg60":2.83,"Avg300":1.83,"Total":162290720},"Full":{"Avg10":0.56,"Avg60":0.74,"Avg300":0.86,"Total":107286969}}
+{"Some":{"Avg10":2.51,"Avg60":2.77,"Avg300":1.82,"Total":162309222},"Full":{"Avg10":0.64,"Avg60":0.75,"Avg300":0.86,"Total":107297297}}
+{"Some":{"Avg10":2.51,"Avg60":2.77,"Avg300":1.82,"Total":162335117},"Full":{"Avg10":0.64,"Avg60":0.75,"Avg300":0.86,"Total":107308164}}
+{"Some":{"Avg10":2.24,"Avg60":2.71,"Avg300":1.82,"Total":162349376},"Full":{"Avg10":0.71,"Avg60":0.76,"Avg300":0.86,"Total":107318717}}
 ```
 
 ## Supported Files

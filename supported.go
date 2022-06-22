@@ -6,20 +6,20 @@ import (
 	"github.com/prometheus/procfs"
 )
 
-type ProcDirectory struct {
+type ProcFile struct {
 	Base string
 	Show func(fpath string, fs procfs.FS) (string, error)
 }
 
-type PidDirectory struct {
+type ProcPidFile struct {
 	Base string
 	Show func(fpath string, fs procfs.Proc) (string, error)
 }
 
-func PidFiles(pid int) []PidDirectory {
+func PidFiles(pid int) []ProcPidFile {
 	base := "/proc/" + fmt.Sprint(pid)
 
-	return []PidDirectory{
+	return []ProcPidFile{
 		{
 			Base: base + "/cgroup",
 			Show: PidCgroup,
@@ -63,8 +63,8 @@ func PidFiles(pid int) []PidDirectory {
 	}
 }
 
-func SupportedFiles() []ProcDirectory {
-	return []ProcDirectory{
+func SupportedFiles() []ProcFile {
+	return []ProcFile{
 		{
 			Base: "/proc/pressure",
 			Show: Pressure,
