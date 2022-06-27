@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"regexp"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/docopt/docopt-go"
 	"github.com/prometheus/procfs"
+	"github.com/prometheus/procfs/sysfs"
 )
 
 func Usage() string {
@@ -32,6 +34,12 @@ Supported Files:
 		usage = usage + "	" + dir.Base + "\n"
 	}
 
+	usage = usage + "	Sys Files:\n"
+
+	for _, dir := range SupportedSysFiles() {
+		usage = usage + "	" + dir.Base + "\n"
+	}
+
 	usage = usage + "	Pid Specific Files:\n"
 
 	for _, dir := range PidFiles(1234) {
@@ -45,6 +53,16 @@ func findGeneralProcFile(fpath string, proc procfs.FS) (*ProcFile, error) {
 	for _, pdir := range SupportedFiles() {
 		if strings.HasPrefix(fpath, pdir.Base) {
 			return &pdir, nil
+		}
+	}
+
+	return nil, nil
+}
+
+func findSysFile(fpath string, fs sysfs.FS) (*SysFile, error) {
+	for _, sdir := range SupportedSysFiles() {
+		if strings.HasPrefix(fpath, sdir.Base) {
+			return &sdir, nil
 		}
 	}
 
@@ -94,6 +112,27 @@ func main() {
 		os.Exit(0)
 	}
 
+	sys, err := sysfs.NewFS("/sys")
+	handleError(err)
+
+	sfile, err := findSysFile(fpath, sys)
+	handleError(err)
+	if sfile != nil {
+		for {
+			json, err := sfile.Show(fpath, sys)
+			handleError(err)
+
+			fmt.Println(json)
+			if ms == 0 {
+				break
+			} else {
+				time.Sleep(time.Duration(ms) * time.Millisecond)
+			}
+		}
+
+		os.Exit(0)
+	}
+
 	// try foo
 
 	pidPattern := regexp.MustCompile("/proc/([0-9]+)")
@@ -125,4 +164,6 @@ func main() {
 
 		os.Exit(0)
 	}
+
+	panic(errors.New("procolli: " + fpath + " is not supported. See --help for supported files."))
 }

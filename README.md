@@ -59,6 +59,15 @@ Procolli displays files in the proc filesystem as machine-readable JSON. It's a 
 /proc/<pid>/stat
 ```
 
+```
+/sys/class/dmi
+/sys/class/net
+/sys/class/nvme
+/sys/class/power_supply
+/sys/class/thermal/cooling_device
+/sys/class/thermal/thermal_zone
+```
+
 ## License
 
 The MIT License

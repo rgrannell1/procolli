@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/prometheus/procfs"
+	"github.com/prometheus/procfs/sysfs"
 )
 
 type ProcFile struct {
@@ -14,6 +15,11 @@ type ProcFile struct {
 type ProcPidFile struct {
 	Base string
 	Show func(fpath string, fs procfs.Proc) (string, error)
+}
+
+type SysFile struct {
+	Base string
+	Show func(fpath string, fs sysfs.FS) (string, error)
 }
 
 func PidFiles(pid int) []ProcPidFile {
@@ -156,6 +162,35 @@ func SupportedFiles() []ProcFile {
 		{
 			Base: "/proc/zoneinfo",
 			Show: ZoneInfo,
+		},
+	}
+}
+
+func SupportedSysFiles() []SysFile {
+	return []SysFile{
+		{
+			Base: "/sys/class/dmi",
+			Show: ClassDmi,
+		},
+		{
+			Base: "/sys/class/net",
+			Show: ClassNet,
+		},
+		{
+			Base: "/sys/class/nvme",
+			Show: ClassNvme,
+		},
+		{
+			Base: "/sys/class/power_supply",
+			Show: ClassPowerSupply,
+		},
+		{
+			Base: "/sys/class/thermal/cooling_device",
+			Show: ClassThermalCoolingDevice,
+		},
+		{
+			Base: "/sys/class/thermal/thermal_zone",
+			Show: ClassThermalZoneStats,
 		},
 	}
 }
