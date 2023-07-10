@@ -6,7 +6,7 @@ Procolli displays files in the proc filesystem as machine-readable JSON. It's a 
 ## Usage
 
 ```bash
-❯ procolli /proc/pressure/cpu --watch 1000
+procolli /proc/pressure/cpu --watch 1000
 ```
 
 ```json
@@ -72,7 +72,7 @@ Procolli displays files in the proc filesystem as machine-readable JSON. It's a 
 
 The MIT License
 
-Copyright (c) 2022 Róisín Grannell
+Copyright (c) 2023 Róisín Grannell
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
